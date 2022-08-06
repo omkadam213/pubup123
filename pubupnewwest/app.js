@@ -100,7 +100,7 @@ const userSchema = new mongoose.Schema({
     bio: String,
     image: String,
     invites: [{
-        user: String,
+        user: {type: Types.ObjectId, ref: "clubUsers"}
     }, ],
 
 
@@ -427,17 +427,21 @@ app.get("/users/:id", (req, res) => {
 app.get("/myinvites", (req, res) => {
     var myid = req.session.userid
     console.log(myid);
-    clubUsers.findById(myid, (err, result) => {
-        console.log(result)
-        if (!err) {
-            res.render("myinvites", {
-                result: result.invites[0],
+    clubUsers.findById(myid).populate("invites.user").exec((err, result)=>{
+        console.log(result);
+        res.render("myinvites", {result: result.invites})
+    })
+    //      (err, result) => {
+    //     console.log(result)
+    //     if (!err) { 
+    //         res.render("myinvites", {
+    //             result: result.invites,
+    //         });
+    //     } else {
+    //         console.log(err);
+    //     }
+    // }
 
-            });
-        } else {
-            console.log(err);
-        }
-    });
 })
 
 
